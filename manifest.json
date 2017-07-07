@@ -1,12 +1,19 @@
 {
   "manifest_version": 2,
-
   "name": "JIRA Linker",
   "description": "Make JIRA ticket ids into links.",
   "version": "0.1",
-
   "options_page": "options.html",
-
+  "content_scripts": [
+    {
+      "matches": [
+        "*://github.com/*"
+      ],
+      "js": [
+        "js/linker.js"
+      ]
+    }
+  ],
   "permissions": [
     "storage"
   ]
