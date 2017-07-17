@@ -52,6 +52,7 @@ function addProjectId() {
     projectIds.push(projectIdInput.value);
     projectIdInput.value = '';
     renderProjectIds();
+    saveOptions();
   }
 
 }
@@ -64,6 +65,7 @@ function removeProjectId(event) {
   if (index > -1 && index < projectIds.length){
     projectIds.splice(index, 1);
     renderProjectIds();
+    saveOptions();
   }
 }
 
