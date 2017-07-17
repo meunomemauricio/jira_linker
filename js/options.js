@@ -2,6 +2,8 @@
  * Options Panel
  */
 
+let projectIds;
+
 /**
  * Display status message.
  *
@@ -10,7 +12,7 @@
  */
 function updateStatus(message, timeout) {
   timeout = timeout || 750;
-  var status = document.getElementById('status');
+  let status = document.getElementById('status');
   status.textContent = message;
   setTimeout(function() {
     status.textContent = '';
@@ -21,14 +23,8 @@ function updateStatus(message, timeout) {
  * Saves options to chrome.storage
  */
 function saveOptions() {
-  var url = document.getElementById('url').value;
-  var projectID = document.getElementById('projectID').value;
-
-  var options = {
-    url: url,
-    projectID: projectID
-  };
-
+  let url = document.getElementById('url').value;
+  let options = {url: url, projectIds: projectIds};
   chrome.storage.local.set(options, updateStatus('Options saved...'));
 }
 
@@ -39,12 +35,64 @@ function restoreOptions() {
   // Use default value color = 'red' and likesColor = true.
   chrome.storage.local.get({
     url: '',
-    projectID: ''
+    projectIds: []
   }, function(items) {
     document.getElementById('url').value = items.url;
-    document.getElementById('projectID').value = items.projectID;
+    projectIds = items.projectIds;
+    renderProjectIds();
+  });
+}
+
+/**
+ * Add a Project ID to the global list.
+ */
+function addProjectId() {
+  let projectIdInput = document.getElementById('project-id');
+  if (projectIdInput.value) {
+    projectIds.push(projectIdInput.value);
+    projectIdInput.value = '';
+    renderProjectIds();
+  }
+
+}
+
+/**
+ * Remove a Project ID from the list.
+ */
+function removeProjectId(event) {
+  let index = event.srcElement.name;
+  if (index > -1 && index < projectIds.length){
+    projectIds.splice(index, 1);
+    renderProjectIds();
+  }
+}
+
+/**
+ * Render the Project ID list.
+ */
+function renderProjectIds() {
+  let listItems = [];
+  projectIds.forEach(function(pId, idx){
+    let removeLink = `<a href="#" class="remove-id" name="${idx}">X</a>`;
+    listItems.push(`<li>${pId} - ${removeLink}</li>`);
+  });
+  let projectIdUl = document.getElementById('project-id-list');
+  projectIdUl.innerHTML = listItems.join('');
+  updateEventListeners();
+}
+
+/**
+ * Add Event Listeners to the remove buttons.
+ *
+ * It's necessary to call this every time the list is rendered, to make sure
+ * indexes are updated and new items are covered.
+ */
+function updateEventListeners() {
+  Array.from(document.getElementsByClassName('remove-id')).forEach(function(el) {
+    el.addEventListener('click', removeProjectId);
   });
 }
 
 document.addEventListener('DOMContentLoaded', restoreOptions);
 document.getElementById('save').addEventListener('click', saveOptions);
+document.getElementById('add-project-id').addEventListener('click', addProjectId);

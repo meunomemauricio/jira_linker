@@ -6,18 +6,19 @@
 /**
  * Retrieve Github comments and substitute occurrences of the project ID to a link
  */
-function substituteIDs(url, projectID) {
-  var pattern = new RegExp(projectID + '(-\d+)?', 'g');
-  var linkHTML = '<a href="' + url + '$&">$&</a>';
-  var matches = document.querySelectorAll('td.comment-body');
-  for (i=0; i < matches.length; i++) {
-    var comment = matches[i].innerHTML;
-    matches[i].innerHTML = comment.replace(pattern, linkHTML);
-  }
+function substituteIDs(url, projectIds) {
+  let linkHTML = `<a href="${url}/$&">$&</a>`;
+  projectIds.forEach(function (pId){
+    let pattern = new RegExp(`${pId}(-\\d+)?`, 'g');
+    let matches = document.querySelectorAll('td.comment-body,span.js-issue-title');
+    matches.forEach(function(match) {
+      match.innerHTML = match.innerHTML.replace(pattern, linkHTML);
+    });
+  });
 }
 
-chrome.storage.local.get(['url', 'projectID'], function(items) {
-  if (items.projectID && items.url) {
-    substituteIDs(items.url, items.projectID);
+chrome.storage.local.get(['url', 'projectIds'], function(items) {
+  if (items.projectIds && items.url) {
+    substituteIDs(items.url, items.projectIds);
   }
 });
