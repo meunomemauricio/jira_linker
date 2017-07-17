@@ -48,13 +48,17 @@ function restoreOptions() {
  */
 function addProjectId() {
   let projectIdInput = document.getElementById('project-id');
-  if (projectIdInput.value) {
-    projectIds.push(projectIdInput.value);
+  let value = projectIdInput.value.replace(/^\s+|\s+$/g, '');
+  if (value) {
+    if (projectIds.indexOf(value) > -1) {
+      updateStatus('Project ID already present on the list.', 2000);
+      return;
+    }
+    projectIds.push(value);
     projectIdInput.value = '';
     renderProjectIds();
     saveOptions();
   }
-
 }
 
 /**
