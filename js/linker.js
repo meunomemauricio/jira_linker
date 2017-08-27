@@ -12,7 +12,7 @@ const SELECTORS = 'td.comment-body,span.js-issue-title';
 function substituteIDs(url, projectIds) {
   let linkHTML = `<a target="_blank" href="${url}/$&">$&</a>`;
   projectIds.forEach(function (pId){
-    let pattern = new RegExp(`${pId}(-\\d+)?`, 'g');
+    let pattern = new RegExp(`${pId}-\\d+`, 'g');
     let matches = document.querySelectorAll(SELECTORS);
     matches.forEach(function(match) {
       match.innerHTML = match.innerHTML.replace(pattern, linkHTML);
